@@ -166,16 +166,6 @@ public class MalletAgent : Agent
     }
 
 
-    // void OnTriggerStay2D(Collider2D collision)
-    // {
-    //     if (collision.CompareTag("CourtLine"))
-    //     {
-    //         Debug.Log("Collided with CourtLine: " + collision.gameObject.name);  // 衝突したオブジェクトの名前を表示
-    //         AddReward(-1.0f*Time.deltaTime);
-    //         badcontrolreward += -1.0f*Time.deltaTime;
-    //     }
-    // }
-
 
     public override void OnActionReceived(ActionBuffers actions)
     {
