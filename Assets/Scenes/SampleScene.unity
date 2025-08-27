@@ -352,7 +352,11 @@ PrefabInstance:
     - target: {fileID: 577499645862655833, guid: 89ab7b200e3f9bf4ea9059a3f1ea2387, type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: 3f69a3c2c0fa23b488ac61f806a89527, type: 3}
+      objectReference: {fileID: 0}
+    - target: {fileID: 577499645862655833, guid: 89ab7b200e3f9bf4ea9059a3f1ea2387, type: 3}
+      propertyPath: m_BrainParameters.VectorObservationSize
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 1442612825550333164, guid: 89ab7b200e3f9bf4ea9059a3f1ea2387, type: 3}
       propertyPath: m_Name
       value: Env
@@ -400,7 +404,11 @@ PrefabInstance:
     - target: {fileID: 8887363718656486474, guid: 89ab7b200e3f9bf4ea9059a3f1ea2387, type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: 3f69a3c2c0fa23b488ac61f806a89527, type: 3}
+      objectReference: {fileID: 0}
+    - target: {fileID: 8887363718656486474, guid: 89ab7b200e3f9bf4ea9059a3f1ea2387, type: 3}
+      propertyPath: m_BrainParameters.VectorObservationSize
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
