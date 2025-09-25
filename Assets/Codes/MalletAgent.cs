@@ -30,7 +30,6 @@ public class MalletAgent : Agent
 
     private float dir;
 
-    private int decisionCounter = 0;
 
     public float totalEnergyLoss = 0.0f; // エネルギーロスの合計
 
@@ -59,6 +58,8 @@ public class MalletAgent : Agent
 
     public int stateofpuck = 0; // パックの状態を管理する変数 (自分より下にいる、自分と敵の間にいる、敵より上にいる)
 
+    private float attackrewardmagnitude = 0.1f;
+
     public override void Initialize()
     {
         dir = (agentID == 0) ? 1.0f : -1.0f;
@@ -85,7 +86,6 @@ public class MalletAgent : Agent
         badcontrolreward = 0.0f; // 悪い制御報酬をリセット
         speedreward = 0.0f; // 速度報酬をリセット
         attackbehindreward = 0.0f; // 攻撃後ろ報酬をリセット
-        decisionCounter = 0; // 決定カウンターをリセット
         hitpack = false; // パックに当たったフラグをリセット
         myvelx = 0.0f; // 自分の速度のx成分をリセット
         myvely = 0.0f; // 自分の速度のy成分をリセット
@@ -141,8 +141,8 @@ public class MalletAgent : Agent
         // ボールを相手陣地に返すと報酬
         if (was_puck_in_my_area == 0 && is_puck_in_my_area == 1 && hitpack == true)
         {
-            AddReward(0.005f);
-            attackreturnreward += 0.005f;
+            AddReward(0.005f * attackrewardmagnitude);
+            attackreturnreward += 0.005f * attackrewardmagnitude;
 
             // パックの位置と速度
             Vector2 puckPos = new Vector2(puck.transform.localPosition.x, puck.transform.localPosition.y);
@@ -164,13 +164,12 @@ public class MalletAgent : Agent
             float rewardToLeft = 5*Mathf.Exp(k * (1f - Vector2.Dot(puckDir, toLeftFakeGoal)));
 
             // 最大の方向報酬を選ぶ
-            float maxValue = 0.001f * Mathf.Max(rewardToEnemy, rewardToRight, rewardToLeft, 0) * puck_velocity.magnitude;
+            float maxValue = 0.005f * Mathf.Max(rewardToEnemy, rewardToRight, rewardToLeft, 0) * puck_velocity.magnitude * attackrewardmagnitude;
 
             AddReward(maxValue); // 内積が大きいほど報酬を増やす
             attackdirectionreward += maxValue; // 内積が大きいほど報酬を増やす
-                                                        //Debug.Log("dotProduct" + maxValue* 0.0025f);
-            AddReward(puck_velocity.magnitude / maxSpeed * 0.05f); // パックの速度が大きいほど報酬を増やす
-            attackspeedreward += puck_velocity.magnitude / maxSpeed * 0.1f; // パックの速度が大きいほど報酬を増やす
+            AddReward(puck_velocity.magnitude / maxSpeed * 0.05f * attackrewardmagnitude); // パックの速度が大きいほど報酬を増やす
+            attackspeedreward += puck_velocity.magnitude / maxSpeed * 0.05f * attackrewardmagnitude; // パックの速度が大きいほど報酬を増やす
             hitpack = false; // フラグをリセット
         }
 
@@ -179,18 +178,18 @@ public class MalletAgent : Agent
         float puckY = puck.transform.localPosition.y * dir;
         int newstateofpuck = CheckStateOfPuck(); // パックの状態を管理する変数 (自分より下にいる、自分と敵の間にいる、敵より上にいる)
 
-        if (newstateofpuck != stateofpuck)
+        if (newstateofpuck != stateofpuck) // 状態遷移した場合
         {
 
             if (stateofpuck == 1 && newstateofpuck == 0)
             {// パックがじぶんよりしたにいってしまったので防御失敗したと解釈できるので、負の報酬を与える
                 AddReward(-0.0f);
-                attackbehindreward += -0.0f; // 防御失敗の報酬を与える
+                attackbehindreward += -0.0f; // 防御失敗の報酬を与える（今回は0.0fからいじっていない）
             }
             else if (stateofpuck == 1 && newstateofpuck == 2)
-            {// パックが敵より上に行ったことから、攻撃のチャンスと解釈できるので、正の報酬を与える
-                AddReward(0.05f);
-                attackbehindreward += 0.05f; // 攻撃のチャンスの報酬を与える
+            {// パックが敵より上に行った場合、相手がパックをそらしたと解釈でき、ゴールに近い状態にあると考えられるので、正の報酬を与える
+                AddReward(0.05f * attackrewardmagnitude);
+                attackbehindreward += 0.05f * attackrewardmagnitude; // 攻撃のチャンスの報酬を与える
             }
             stateofpuck = newstateofpuck; // パックの状態を更新
         }
@@ -204,22 +203,21 @@ public class MalletAgent : Agent
         // 速度を直接設定
         rb.velocity += new Vector2(dir * current_acceleration_x, dir * current_acceleration_y);
 
-        // 斜め45度方向の移動速度が最大200cm/sec であるという制約を考慮
+        // 斜め45度方向の移動速度が最大200cm/sec であるという制約を考慮（制約条件に応じて適宜変更してください）
         float motor1_velocity = (-rb.velocity.x + rb.velocity.y) / Mathf.Sqrt(2);
-        // 2つめのモーターの速度を計算  
         float motor2_velocity = (-rb.velocity.x - rb.velocity.y) / Mathf.Sqrt(2);
 
 
         // プレイヤーの制限
         if (gameObject.transform.localPosition.y * dir >= 0 && rb.velocity.y * dir >= 0)
         {
-            float StayEnemyZonePenalty = 1.0f;
+            float StayEnemyZonePenalty = -1.0f;
             int power = 2;
             AddReward(StayEnemyZonePenalty * Time.deltaTime * Mathf.Pow(Mathf.Abs(gameObject.transform.localPosition.y * dir) / threthold_y, power));
             badcontrolreward += StayEnemyZonePenalty * Time.deltaTime * Mathf.Pow(Mathf.Abs(gameObject.transform.localPosition.y * dir) / threthold_y, power);
         }
 
-        // パックの動く範囲を制限
+        // マレットの動く範囲を制限
         if (gameObject.transform.localPosition.y * dir >= threthold_y && rb.velocity.y * dir >= 0)
         {
             rb.velocity = new Vector2(rb.velocity.x, 0);
@@ -255,8 +253,8 @@ public class MalletAgent : Agent
     {
         if (collision.collider.CompareTag("Puck"))
         {
-            AddReward(0.0025f);
-            attackreturnreward += 0.0025f;
+            AddReward(0.025f * attackrewardmagnitude);
+            attackreturnreward += 0.025f * attackrewardmagnitude;
             hitpack = true; // パックに当たったフラグを立てる
         }
         if (collision.collider.CompareTag("Wall") || collision.collider.CompareTag("UpperWall") || collision.collider.CompareTag("LowerWall"))

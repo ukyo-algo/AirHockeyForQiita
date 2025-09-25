@@ -352,7 +352,7 @@ PrefabInstance:
     - target: {fileID: 577499645862655833, guid: 89ab7b200e3f9bf4ea9059a3f1ea2387, type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 5022602860645237092, guid: 5d43561783f62cf4aabe79e65b668ff1, type: 3}
     - target: {fileID: 577499645862655833, guid: 89ab7b200e3f9bf4ea9059a3f1ea2387, type: 3}
       propertyPath: m_BrainParameters.VectorObservationSize
       value: 10
@@ -360,6 +360,10 @@ PrefabInstance:
     - target: {fileID: 1442612825550333164, guid: 89ab7b200e3f9bf4ea9059a3f1ea2387, type: 3}
       propertyPath: m_Name
       value: Env
+      objectReference: {fileID: 0}
+    - target: {fileID: 3371822490412097240, guid: 89ab7b200e3f9bf4ea9059a3f1ea2387, type: 3}
+      propertyPath: m_LinearDrag
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 6351285503495920508, guid: 89ab7b200e3f9bf4ea9059a3f1ea2387, type: 3}
       propertyPath: m_LocalPosition.x
@@ -404,7 +408,7 @@ PrefabInstance:
     - target: {fileID: 8887363718656486474, guid: 89ab7b200e3f9bf4ea9059a3f1ea2387, type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 5022602860645237092, guid: 5d43561783f62cf4aabe79e65b668ff1, type: 3}
     - target: {fileID: 8887363718656486474, guid: 89ab7b200e3f9bf4ea9059a3f1ea2387, type: 3}
       propertyPath: m_BrainParameters.VectorObservationSize
       value: 10
